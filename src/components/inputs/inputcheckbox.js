@@ -29,7 +29,7 @@ export default function InputCheckbox(props){
 
 
     return(
-        <div className={`${props.className} flex justify-start items-center`}>
+        <div className={`${props.className} flex justify-start items-center`} onClick={props.onClick ? props.onClick : () => void 0 }>
             <input
                 className='h-8 w-8 border hover:border-gray-600 rounded px-4 bg-gray-50 mr-2'
                 type="checkbox"

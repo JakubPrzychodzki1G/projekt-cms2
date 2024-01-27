@@ -43,7 +43,7 @@ const AddPlayer = (props) => {
     return (
         <>
             <div>
-                <button className="p-4 bg-blue-500 text-white font-bold rounded-xl" onClick={clickHandler}>
+                <button className="p-2 md:p-4 bg-blue-500 text-white font-bold rounded-xl" onClick={clickHandler}>
                     Dodaj Zawodnika
                 </button>
             </div>

@@ -16,6 +16,9 @@ const LessonData = (props) => {
     const [loading, setLoading] = useState(true);
     const [allReadyAddedPlayers, setAllReadyAddedPlayers] = useState([]); // [id, id, id
     const [addingPlayer, setAddingPlayer] = useState(false);
+    const [attendances, setAttendances] = useState([]); // [attendance, attendance, attendance]
+    const [addingAttendances, setAddingAttendances] = useState(false); // [attendance, attendance, attendance
+    const [playersIdsToAddAttendances, setPlayersIdsToAddAttendances] = useState([]);
 
     const addNewPlayer = async (e, playerId) => {
         e.preventDefault();
@@ -59,6 +62,22 @@ const LessonData = (props) => {
             return 'error';
         }
     }
+
+    const inputAttendanceChangeHandler = async (event, name, callback) => {
+        const value = event.target?.type == 'number' ? +event.target.value : (event.target?.type == "checkbox" ? event.target.checked : event.target.value)
+        callback();
+        const res = await api.patchAttendance(event.target.id, {[name]: value})
+        if (res) {
+            setAttendances((prevState) => {
+                return [...prevState, res];
+            });
+            return 'success';
+        }
+        else {
+            return 'error';
+        }
+    }
+
     const fetchPlayers = async () => {
         await Promise.all(props.data.players.map(async (element) => {
             if (playersData.some(value => `/api/players/${value.id}` === element)) return;
@@ -71,6 +90,18 @@ const LessonData = (props) => {
                     return [...prevState, res.id]
                 })
                 setGroupId(res.swimGroup[0]?.id);
+            }
+        }));
+        return 'end';
+    }
+
+    const fetchAttendances = async () => {
+        await Promise.all(props.data.attendances.map(async (element) => {
+            const res = await api.get(element.replace("/api", ""))
+            if(res) {
+                setAttendances((prevState) => {
+                    return [...prevState, res]
+                })
             }
         }));
         return 'end';
@@ -90,22 +121,76 @@ const LessonData = (props) => {
             setPlayersData((prevState) => {
                 return prevState.filter((player) => player.id !== playerId)
             })
+            setAttendances((prevState) => {
+                return prevState.filter((attendance) => attendance.player.replace("/api/players/", "") != playerId)
+            })
         }
     }
 
     const functionForUseEffect = async () => {
         const res1 = await fetchPlayers();
         const res2 = await fetchGroups();
+        const res3 = await fetchAttendances();
         setLoading(false);
+    }
+
+    const addAttendancesObjectsForAllUsers = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setAddingAttendances(true);
+        await Promise.all(playersIdsToAddAttendances.map(async (playerId) => {
+            const res = await api.postAttendance(
+                {
+                    lesson: `/api/lessons/${props.data.id}`,
+                    player: `/api/players/${playerId}`,
+                }
+            );
+            if(res) {
+                setAttendances((prevState) => {
+                    return [...prevState, res]
+                })
+                setPlayersIdsToAddAttendances((prevState) => {
+                    return prevState.filter((id) => id !== playerId)
+                })
+            }
+        }));
+        setAddingAttendances(false);
     }
 
     useEffect(() => {
         if(props.data.players) functionForUseEffect();
     }, [props.data.players])
     
-    // useEffect(() => {
-    //     fetchGroups();
-    // }, [])
+    useEffect(() => {
+        if(loading) return;
+        let variableToAdd = [];
+        if(attendances.length > 0){
+            attendances.forEach((attendance) => {
+                if(playersIdsToAddAttendances?.includes(attendance.player.replace("/api/players/", ""))) return;
+                playersData.forEach((player) => {
+                    console.log(variableToAdd)
+                    console.log(player.id)
+                    console.log(attendance.player.replace("/api/players/", ""))
+                    if(player.id == attendance.player.replace("/api/players/", "")){
+                        variableToAdd = variableToAdd.filter((id) => id !== player.id);
+                    }
+                    else if(player.id != attendance.player.replace("/api/players/", "")){
+                        variableToAdd.push(player.id);
+                    }
+                })
+            })
+            console.log(variableToAdd)
+            setPlayersIdsToAddAttendances([...new Set([...variableToAdd])]);
+        }
+        else{
+            playersData.forEach((player) => {
+                setPlayersIdsToAddAttendances((prevState) => {
+                    return [...new Set([...prevState, player.id])]
+                })
+            })
+        }
+        console.log(playersIdsToAddAttendances)
+    }, [loading, playersData])
 
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -281,7 +366,7 @@ const LessonData = (props) => {
                                 }}
                                 errorText="Nie można zmienić grupy, ponieważ lekcja ma już przypisanych uczestników! By zmienić grupę, należy najpierw usunąć uczestników."
                                 readOnly={props.isReadOnly}
-                                value={playersData[0] && playersData[0].swimGroup[0] ? playersData[0].swimGroup[0].id : 0}
+                                value={playersData[0] ? playersData[0].swimGroup[0].id : 0}
                             >
                                 {
                                     swimGroupsData && swimGroupsData.map((x) => {
@@ -293,11 +378,26 @@ const LessonData = (props) => {
                             </InputSelectBox>
                         }
                         <div className="flex justify-between mb-4">
-                            <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+                            <h4 className="w-1/5 mb-6 text-xl font-semibold text-black dark:text-white">
                                 Uczestnicy zajęć
                             </h4>
+                            <div className="flex w-4/5 justify-end gap-4">
                             {
-                                (props.data.isInvidual || groupId !== -1) && ( playersData.length < 1 || !props.data.isInvidual ) && 
+                                playersIdsToAddAttendances?.length == 0 && <div className="">
+                                    <button className="p-2 md:p-4 w-full bg-blue-500 text-white font-bold rounded-xl" onClick={addAttendancesObjectsForAllUsers}>
+                                        {
+                                            !addingAttendances 
+                                            ? <span>Dodaj obecności</span> 
+                                            : 
+                                            <div className="w-full flex justify-center">
+                                                <div className="h-6 w-8 border-4 border-white rounded-full animate-spin"></div>
+                                            </div>
+                                        }
+                                    </button>
+                                </div>
+                            }
+                            {
+                                !props.isReadOnly && (props.data.isInvidual || groupId !== -1) && ( playersData.length < 1 || !props.data.isInvidual ) && 
                                     <AddPlayer 
                                         options={props.data.isInvidual ? {'id': allReadyAddedPlayers.toString()} : {"swimGroup.id": groupId, 'id': allReadyAddedPlayers.toString()}} 
                                         players={props.data.players} 
@@ -307,8 +407,9 @@ const LessonData = (props) => {
                                         setLoading={toSettingLoading}
                                     />
                             }
+                            </div>
                         </div>
-                        <LittlePlayerTable delete={deletePlayer} playersData={playersData} module={"lessons"} isReadOnly={props.isReadOnly}/>
+                        <LittlePlayerTable delete={deletePlayer} attendancesChange={inputAttendanceChangeHandler} playersData={playersData} attendances={attendances} module={"lessons"} isReadOnly={props.isReadOnly}/>
                     </>
                 }
             </div>

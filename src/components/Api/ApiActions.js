@@ -187,6 +187,12 @@ export default {
     getAttendance: async (id, options, context) => {
         return await API.get(`/attendances/${id}`, options, context);
     },
+    getSettings: async (options, context) => {
+        return await API.get("/settings", options, context);
+    },
+    getSetting: async (id, options, context) => {
+        return await API.get(`/settings/${id}`, options, context);
+    },
     //posts requests
     postGroup: async (payload, context) => {
         return await API.post("/swim_groups", payload, {}, context);
@@ -219,9 +225,15 @@ export default {
     patchAttendance: async (id, payload ,context) => {
         return await API.patch(`/attendances/${id}`, payload, {}, context);
     },
+    patchSetting: async (id, payload ,context) => {
+        return await API.patch(`/settings/${id}`, payload, {}, context);
+    },
     //put requests
     putGroup: async (id, payload ,context) => {
         return await API.put(`/swim_groups/${id}`, payload, {}, context);
+    },
+    putSetting: async (id, payload ,context) => {
+        return await API.put(`/settings/${id}`, payload, {}, context);
     },
     //delete requests
     deleteGroup: async (id, context) => {

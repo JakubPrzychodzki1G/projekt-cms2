@@ -66,7 +66,7 @@ export default function LoginForm() {
                       className="w-full rounded-lg bg-transparent py-2 outline-none text-lg text-slate-500 dark:text-slate-100 focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" 
                       name="email" 
                       label="E-mail" 
-                      validateFunction={(value) => {return value !== '' && value?.trim().length >= 5 && value?.trim().length < 255 && validateEmail(value)}}
+                      validateFunction={(value) => {return value !== '' && value?.trim().length >= 5 && value.trim().length < 255 && validateEmail(value)}}
                       formIsValid={changeCountFormValid}
                       inputChange={inputChangeHandler}
                       errorText="Prosze wprowadzić poprawmy adres e-mail"
