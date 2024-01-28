@@ -1,4 +1,5 @@
 'use client'
+import {useState, useEffect} from "react"
 import Head from "next/head";
 import Hero from "../components/hero";
 import Navbar from "../components/navbar";
@@ -11,6 +12,44 @@ import Testimonials from "../components/testimonials";
 import Faq from "../components/faq";
 
 const Home = () => {
+
+  const [settingsData, setSettingsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSettings = async (options = '') => {
+    var myHeaders = new Headers();
+    myHeaders.append("accept", "application/json");
+
+    var requestOptions = {
+    method: 'GET',
+    headers: myHeaders,
+    // mode: 'no-cors'
+    };
+
+    await fetch(`/api/settings`, requestOptions)
+    .then((res) => res.json())
+    .then((data) => {
+        console.log("DUPA")
+        console.log({data})
+        setSettingsData(data)
+        setLoading(false)
+    })
+    .catch(error => console.log('error', error))
+    .finally(error => console.log("SRAKA", error));
+  } 
+
+  useEffect(() => {
+    console.log("Use effect");
+    fetchSettings();
+  }, [])
+
+  const getValue = (key, defaultValue) => {
+    const data = settingsData.find((setting) => setting.name === key)
+    console.log(key)
+    console.log(data)
+    return data?.value?.value ?? defaultValue
+  }
+
   return (
     <>
       <Head>
@@ -21,17 +60,18 @@ const Home = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <Navbar />
+      <Navbar 
+          clubLogo={getValue("clubLogo", "https://www.w3schools.com/howto/img_avatar.png")}
+          clubName={getValue("clubName", "Klub pływacki")}
+      />
       <Hero 
-      title="Dołącz do naszego klubu pływackiego!"
-      description = "Nasz klub jest najlepszy na świecie, a w naszej kadrze posiadamy wybitnych pływaków. Dołącz do nich juz dziś!"/>
+      title={getValue("heroTitle", "Hero title")}
+      description = {getValue("heroDescription", "Hero description")}/>
       <SectionTitle
         id = "about"
         pretitle="O nas"
-        title=" Co powinieneś o nas wiedzieć">
-        Klub pływacki szczupak został załozony w 2015 roku. To pasja to pływania oraz wody spowodowała, ze trenują u nas same wybitne jednostki.
-        Posiadamy kompleksową kadrę trenerską oraz najlepszej jakości sprzęt. 
+        title={getValue("aboutUsTitlte", "About us title")}>
+        {getValue("aboutUsDescription", "About us description")}
       </SectionTitle>
       <Benefits data={benefitOne} />
       <SectionTitle
@@ -39,15 +79,35 @@ const Home = () => {
         pretitle="Opinie"
         title="Opinie naszych kursantów">
       </SectionTitle>
-      <Testimonials />
+      <Testimonials 
+        firstOpinion={getValue("opinions")?.[0]?.opinion ?? "opinia"}
+        firstOpinionUsername={getValue("opinions")?.[0]?.username ?? "Jan Kowalski"}
+        firstOpinionUserTitle={getValue("opinions")?.[0]?.userTitle ?? "Pływak"}
+        firstOpinionUserImage={getValue("opinions")?.[0]?.userImage ?? "https://www.w3schools.com/howto/img_avatar.png"}
+        
+        secondOpinion={getValue("opinions")?.[1]?.opinion ?? "opinia"}
+        secondOpinionUsername={getValue("opinions")?.[1]?.username ?? "Jan Kowalski"}
+        secondOpinionUserTitle={getValue("opinions")?.[1]?.userTitle ?? "Pływak"}
+        secondOpinionUserImage={getValue("opinions")?.[1]?.userImage ?? "https://www.w3schools.com/howto/img_avatar.png"}
+        
+        thirdOpinion={getValue("opinions")?.[2]?.opinion ?? "opinia"}
+        thirdOpinionUsername={getValue("opinions")?.[2]?.username ?? "Jan Kowalski"}
+        thirdOpinionUserTitle={getValue("opinions")?.[2]?.userTitle ?? "Pływak"}
+        thirdOpinionUserImage={getValue("opinions")?.[2]?.userImage ?? "https://www.w3schools.com/howto/img_avatar.png"}
+      />
       <SectionTitle
         id="faq"
         pretitle="FAQ"
         title=" Najczęściej zadawane pytania">
         Sprawdź najczęściej zadawane pytania aby dowiedzieć się więcej o naszym klubie pływackim!
       </SectionTitle>
-      <Faq />
-      <Footer />
+      <Faq 
+      faqData = {getValue("questions")}/>
+      <Footer 
+      facebookLink= {getValue("facebookLink")}
+      instagramLink={getValue("instagramLink")}
+      tweeterLink={getValue("tweeterLink")}
+      linkedInLink={getValue("linkedInLink")}/>
     </>
   );
 }

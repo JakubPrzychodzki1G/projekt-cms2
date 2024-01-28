@@ -3,11 +3,12 @@ import Container from "./container";
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 
-const Faq = () => {
-  return (
+const Faq = (props) => {
+    console.log(props.faqData)
+    return (
     <Container className="!p-0">
       <div className="w-full max-w-2xl p-2 mx-auto rounded-2xl">
-        {faqdata.map((item, index) => (
+        {props.faqData.map((item, index) => (
           <div key={item.question} className="mb-5">
             <Disclosure>
               {({ open }) => (
@@ -33,20 +34,6 @@ const Faq = () => {
   );
 }
 
-const faqdata = [
-  {
-    question: "Pierwsze pytanie?",
-    answer: "Pierwsza odpowiedz",
-  },
-  {
-    question: "Drugie pytanie?",
-    answer: "Druga odpowiedz.",
-  },
-  {
-    question: "Trzecia pytanie? ",
-    answer:
-      "Trzecia odpowiedz.",
-  },
-];
+
 
 export default Faq;

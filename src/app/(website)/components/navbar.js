@@ -3,7 +3,7 @@ import ThemeChanger from "./DarkSwitch";
 import Image from "next/image"
 import { Disclosure } from "@headlessui/react";
 
-const Navbar = () => {
+const Navbar = (props) => {
   const navigation = [
     {
       "id" : 1,
@@ -29,18 +29,18 @@ const Navbar = () => {
           {({ open }) => (
             <>
               <div className="flex flex-wrap items-center justify-between w-full lg:w-auto">
-                <Link href="/">
+                <Link href="/main">
                   <span className="flex items-center space-x-2 text-2xl font-medium text-indigo-500 dark:text-gray-100">
                     <span>
-                      <Image
-                        src="/img/logo.svg"
+                      <img
+                        src={props.clubLogo}
                         alt="N"
                         width="32"
                         height="32"
                         className="w-8"
                       />
                     </span>
-                    <span>Szczupak</span>
+                    <span>{props.clubName}</span>
                   </span>
                 </Link>
 
