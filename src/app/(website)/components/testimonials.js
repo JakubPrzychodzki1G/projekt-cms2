@@ -6,46 +6,46 @@ import userOneImg from "../../../../public/img/user1.jpg";
 import userTwoImg from "../../../../public/img/user2.jpg";
 import userThreeImg from "../../../../public/img/user3.jpg";
 
-const Testimonials  = () => {
+const Testimonials  = (props) => {
   return (
     <Container>
       <div className="grid gap-10 lg:grid-cols-2 xl:grid-cols-3">
         <div className="lg:col-span-2 xl:col-auto">
           <div className="flex flex-col justify-between w-full h-full bg-gray-100 px-14 rounded-2xl py-14 dark:bg-trueGray-800">
             <p className="text-2xl leading-normal ">
-              Dzięki pływaniu w klubie Szczupak moje zycie zmieniło się na lepsze! Polecam z całego serca!
+              {props.firstOpinion}
             </p>
 
             <Avatar
-              image={userOneImg}
-              name="Magdalena Hoffmann"
-              title="Uczennica szkoły w Żydowie"
+              image={props.firstOpinionUserImage}
+              name={props.firstOpinionUsername}
+              title={props.firstOpinionUserTitle}
             />
           </div>
         </div>
         <div className="">
           <div className="flex flex-col justify-between w-full h-full bg-gray-100 px-14 rounded-2xl py-14 dark:bg-trueGray-800">
             <p className="text-2xl leading-normal ">
-                Kiedy tu przyszedłem nie potrafiłem pływać, teraz jestem najlepszym pływakiem wśród moich znajomych.
+            {props.secondOpinion}
             </p>
 
             <Avatar
-              image={userTwoImg}
-              name="Paweł Zakrzewski"
-              title="Android Developer"
+              image={props.secondOpinionUserImage}
+              name={props.secondOpinionUsername}
+              title={props.secondOpinionUserTitle}
             />
           </div>
         </div>
         <div className="">
           <div className="flex flex-col justify-between w-full h-full bg-gray-100 px-14 rounded-2xl py-14 dark:bg-trueGray-800">
             <p className="text-2xl leading-normal ">
-              Doświadczona kadra trenerska poprawiła moje wyniki o 100%! Sam nie mogę w to uwierzyć!
+            {props.thirdOpinion}
             </p>
 
             <Avatar
-              image={userThreeImg}
-              name="Jakub Przychodzki"
-              title="Najlepszy pływak w Gnieźnie"
+              image={props.thirdOpinionUserImage}
+              name={props.thirdOpinionUsername}
+              title={props.thirdOpinionUserTitle}
             />
           </div>
         </div>
@@ -58,7 +58,7 @@ function Avatar(props) {
   return (
     <div className="flex items-center mt-8 space-x-3">
       <div className="flex-shrink-0 overflow-hidden rounded-full w-14 h-14">
-        <Image
+        <img
           src={props.image}
           width="40"
           height="40"

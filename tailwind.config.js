@@ -16,6 +16,8 @@ module.exports = {
       },
       colors: {
         trueGray: colors.neutral,
+        "indigo-500": "var(--color-additional)",
+        "indigo-600": "var(--color-secondary)",
         current: "currentColor",
         transparent: "transparent",
         "black-2": "#010101",

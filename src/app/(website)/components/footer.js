@@ -3,7 +3,7 @@ import Image from "next/image";
 import React from "react";
 import Container from "./container";
 
-export default function Footer() {
+export default function Footer(props) {
   return (
     <div className="relative">
       <Container>
@@ -11,34 +11,34 @@ export default function Footer() {
           <div className="flex-row justify-self-center">
             <div className="text-center">Znajdź nas na:</div>
             <div className="flex mt-5 space-x-5 text-gray-400 dark:text-gray-500">
-              <a
-                href="https://twitter.com/web3templates"
+            { props.tweeterLink && <a
+                href={props.tweeterLink}
                 target="_blank"
                 rel="noopener">
                 <span className="sr-only">Twitter</span>
                 <Twitter />
-              </a>
-              <a
-                href="https://facebook.com/web3templates"
+              </a>}
+              {props.facebookLink && <a
+                href={props.facebookLink}
                 target="_blank"
                 rel="noopener">
                 <span className="sr-only">Facebook</span>
                 <Facebook />
-              </a>
-              <a
-                href="https://instagram.com/web3templates"
+              </a>}
+              {props.instagramLink && <a
+                href={props.instagramLink}
                 target="_blank"
                 rel="noopener">
                 <span className="sr-only">Instagram</span>
                 <Instagram />
-              </a>
-              <a
-                href="https://linkedin.com/"
+              </a>}
+              {props.linkedInLink && <a
+                href={props.linkedInLink}
                 target="_blank"
                 rel="noopener">
                 <span className="sr-only">Linkedin</span>
                 <Linkedin />
-              </a>
+              </a>}
             </div>
           </div>
         </div>
