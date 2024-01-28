@@ -29,24 +29,25 @@ const Home = () => {
     await fetch(`/api/settings`, requestOptions)
     .then((res) => res.json())
     .then((data) => {
-        console.log("DUPA")
-        console.log({data})
         setSettingsData(data)
         setLoading(false)
-    })
+        setColors(data.find((value) => value.name === 'colors'))
+    })    
     .catch(error => console.log('error', error))
-    .finally(error => console.log("SRAKA", error));
   } 
 
   useEffect(() => {
-    console.log("Use effect");
     fetchSettings();
   }, [])
 
+  const setColors = (colors) => {
+    document.documentElement.style.setProperty('--color-secondary', colors?.value?.value?.colorSecondary ?? 'black');
+    document.documentElement.style.setProperty('--color-additional', colors?.value?.value?.colorAdditional ?? 'black');
+    document.body.style.backgroundColor= colors?.value?.value?.colorBase ?? 'white'
+  }
+
   const getValue = (key, defaultValue) => {
     const data = settingsData.find((setting) => setting.name === key)
-    console.log(key)
-    console.log(data)
     return data?.value?.value ?? defaultValue
   }
 

@@ -4,11 +4,10 @@ import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 
 const Faq = (props) => {
-    console.log(props.faqData)
     return (
     <Container className="!p-0">
       <div className="w-full max-w-2xl p-2 mx-auto rounded-2xl">
-        {props.faqData.map((item, index) => (
+        {props.faqData?.map((item, index) => (
           <div key={item.question} className="mb-5">
             <Disclosure>
               {({ open }) => (

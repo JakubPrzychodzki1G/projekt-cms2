@@ -4,7 +4,6 @@ import React from "react";
 import Container from "./container";
 
 export default function Footer(props) {
-  console.log(props)
   return (
     <div className="relative">
       <Container>
