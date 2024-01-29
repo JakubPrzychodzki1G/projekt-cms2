@@ -41,9 +41,15 @@ const Home = () => {
   }, [])
 
   const setColors = (colors) => {
-    document.documentElement.style.setProperty('--color-secondary', colors?.value?.value?.colorSecondary ?? 'black');
-    document.documentElement.style.setProperty('--color-additional', colors?.value?.value?.colorAdditional ?? 'black');
-    document.body.style.backgroundColor= colors?.value?.value?.colorBase ?? 'white'
+    console.log("COLORS")
+    console.log(colors?.value?.value?.colorAdditional.value)
+    document.documentElement.style.setProperty('--color-secondary', colors?.value?.value?.colorSecondary.value ?? 'black');
+    // document.documentElement.style.setProperty('--color-secondary', 'red');
+
+    // document.documentElement.style.setProperty('--color-additional', colors?.value?.value?.colorAdditional ?? 'black');
+    document.documentElement.style.setProperty('--color-additional', colors?.value?.value?.colorAdditional.value ?? 'red');
+
+    // document.body.style.backgroundColor= colors?.value?.value?.colorBase ?? 'white'
   }
 
   const getValue = (key, defaultValue) => {
