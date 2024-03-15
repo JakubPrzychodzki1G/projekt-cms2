@@ -27,9 +27,7 @@ const LessonTable = (props) => {
     };
     const res = await api.getLessons(getOptions)
     if(res) {
-        setLessonsData(prevState => {
-          return [...prevState, ...res.filter(newLesson => !prevState.some(oldLesson => oldLesson.id === newLesson.id))]
-        });
+        setLessonsData(res);
         setLoading(false);
     }
   } 
@@ -46,7 +44,7 @@ const LessonTable = (props) => {
 
     const res = await api.deleteLesson(lessonId)
     if(res.ok) {
-      e.target.parentNode.parentNode.remove();
+      setLessonsData(lessonsData.filter(lesson => lesson.id !== lessonId));
     }
   }
 
