@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { useContext } from "react"
-import { UserState } from "@/components/simple/authProvider"
+import { UserState } from "@/components/simple/clientAuthProvider"
 import Link from "next/link"
 import GroupsFilter from "@/components/Filters/GroupsFilter"
 import AddButton from "@/components/Forms/AddButton"
 import { useRouter } from "next/navigation"
+import { ItemValidator } from "@/app/(manageApp)/components/Auth/ItemValidator"
 
 const GroupsTable = (props) => {
   const router = useRouter();
@@ -75,7 +76,7 @@ const GroupsTable = (props) => {
         </h4>
         {props.isMainPage && 
           <div>
-            <AddButton refresh={fetchGroups} component="groups"/>
+            <AddButton refresh={fetchGroups} component="addGroup"/>
           </div>
         }
       </div>
@@ -111,22 +112,20 @@ const GroupsTable = (props) => {
             <div className="flex items-center justify-center p-2.5 xl:p-5">
               <p className="text-meta-3">{`${group.coach.name} ${group.coach.lastName}`}</p>
             </div>
-            {
-              isEditor && (
-                <>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button onClick={(e) => {e.preventDefault(); router.push(`groups/edit/${group.id}`)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                      Edytuj
-                    </button>
-                  </div>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deletePlayer(e, group.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                      Usuń
-                    </button>
-                  </div>
-                </>
-              )
-            }
+            <ItemValidator permission="/groups/edit">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <button onClick={(e) => {e.preventDefault(); router.push(`groups/edit/${group.id}`)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  Edytuj
+                </button>
+              </div>
+            </ItemValidator>
+            <ItemValidator permission="deleteGroup">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deletePlayer(e, group.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                  Usuń
+                </button>
+              </div>
+            </ItemValidator>
           {/* </div> */}
           </Link>
         ))}

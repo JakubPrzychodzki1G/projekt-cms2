@@ -7,7 +7,7 @@ import { Children } from "react"
 export default function InputSelectBox(props){
     if(props.readOnly) return (
             <div className={`${props.className} flex flex-col justify-end`}>
-                <label for={props.name}>{props.label}</label>
+                <label htmlFor={props.name}>{props.label}</label>
                 <Select
                     multiple={props.multiple}
                     className="rounded w-full bg-gray-50"
@@ -39,7 +39,7 @@ export default function InputSelectBox(props){
 
     return(
         <div className={`${props.className} flex flex-col justify-start`}>
-            <label for={props.name}>{props.label}</label>
+            <label htmlFor={props.name}>{props.label}</label>
             <Select
                 multiple={props.multiple}
                 className="rounded w-full bg-gray-50"

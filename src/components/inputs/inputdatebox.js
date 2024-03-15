@@ -8,7 +8,7 @@ import dayjs from "dayjs"
 export default function InputDateBox(props){
     if(props.readOnly) return (
         <div className={`${props.className} flex flex-col justify-end`}>
-            <label for={props.name}>{props.label}</label>
+            <label htmlFor={props.name}>{props.label}</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker 
                 className="rounded px-4 w-full bg-gray-50" 
@@ -16,7 +16,7 @@ export default function InputDateBox(props){
                 id={props.name} 
                 value={dayjs(props.value)} 
                 defaultValue={dayjs(props.placeholder)} 
-                views={['year', 'month', 'day']}
+                views={props.isDateTime ? ['year', 'month', 'day', 'hours', 'minutes'] : ['year', 'month', 'day']}
                 readOnly={props.readOnly}
             />
             </LocalizationProvider>
@@ -35,7 +35,7 @@ export default function InputDateBox(props){
 
     return(
         <div className={`${props.className} flex flex-col justify-start`}>
-            <label for={props.name}>{props.label}</label>
+            <label htmlFor={props.name}>{props.label}</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker 
                 className="rounded px-4 w-full bg-gray-50" 

@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useContext } from "react"
-import { UserState } from "@/components/simple/authProvider"
+import { UserState } from "@/components/simple/clientAuthProvider"
 import Link from "next/link"
 import LessonsFilter from "@/components/Filters/LessonsFilter"
 import AddButton from "@/components/Forms/AddButton"
 import api from "@/components/Api/ApiActions";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation"
+import { ItemValidator } from "@/app/(manageApp)/components/Auth/ItemValidator"
 
 const LessonTable = (props) => {
   const router = useRouter();
@@ -24,7 +25,6 @@ const LessonTable = (props) => {
             ...options
         }
     };
-    console.log(getOptions);
     const res = await api.getLessons(getOptions)
     if(res) {
         setLessonsData(res);
@@ -60,7 +60,7 @@ const LessonTable = (props) => {
         </h4>
         {props.isMainPage && 
           <div>
-            <AddButton refresh={fetchLessons} component="lessons"/>
+            <AddButton refresh={fetchLessons} component="addLesson"/>
           </div>
         }
       </div>
@@ -150,22 +150,20 @@ const LessonTable = (props) => {
             <div className="flex items-center justify-center p-2.5 xl:p-5">
               <p className="text-black dark:text-white">{lesson.ageGroup}</p>
             </div>
-            {
-              isEditor && (
-                <>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button onClick={(e) => {e.stopPropagation(); e.preventDefault(); router.push(`lessons/edit/${lesson.id}`)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                      Edytuj
-                    </button>
-                  </div>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deleteLesson(e, lesson.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                      Usuń
-                    </button>
-                  </div>
-                </>
-              )
-            }
+            <ItemValidator permission="/lessons/edit">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <button onClick={(e) => {e.stopPropagation(); e.preventDefault(); router.push(`lessons/edit/${lesson.id}`)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  Edytuj
+                </button>
+              </div>
+            </ItemValidator>
+            <ItemValidator permission="deleteLesson">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deleteLesson(e, lesson.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                  Usuń
+                </button>
+              </div>
+            </ItemValidator>
           {/* </div> */}
           </Link>
         ))}

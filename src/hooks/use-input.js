@@ -7,7 +7,7 @@ const { useState, useEffect, use } = require("react")
 let timeout = null;
 
 const UseInput = (validateFunction, formChangeFunction, type = 'normal', inputName = '', formIsValid, initialValue, onBlur = null, specialFunc = null) => {
-    const [enteredValue, setEnteredValue] = useState(type == 'normal' || type == 'checkbox' ? initialValue : dayjs(initialValue));
+    const [enteredValue, setEnteredValue] = useState(type == 'normal' || type == 'checkbox' ? (initialValue ? initialValue : (type == 'checkbox' ? false : '')) : dayjs(initialValue));
     const [isTouched, setIsTouched] = useState(false);
     const [isSaved, setIsSaved] = useState();
     const [hasError, setHasError] = useState(false);
@@ -15,6 +15,10 @@ const UseInput = (validateFunction, formChangeFunction, type = 'normal', inputNa
     useEffect(() => {
         setHasError(!valueIsValid && isTouched);
     }, [isTouched]);
+
+    useEffect(() => {
+        setEnteredValue(initialValue ? initialValue : (type == 'checkbox' ? false : ''));
+    }, [initialValue]);
 
     const valueChangeHandler = async (event, date = '') => {
         const isBreak = specialFunc ? specialFunc(event, () => {
@@ -56,15 +60,30 @@ const UseInput = (validateFunction, formChangeFunction, type = 'normal', inputNa
         typeof formIsValid === 'function' && formIsValid(inputName, !validateFunction(type == 'normal' ? event.target.value : event))
     };
 
-    const inputBlurHandler = (event) => {
+    const inputBlurHandler = async (event) => {
         setIsTouched(true);
-        onBlur && onBlur(event, inputName != '' ? inputName : event.target.name, () => {setIsSaved('saving')});
+        if(onBlur){
+            const res = await onBlur(event, inputName != '' ? inputName : event.target.name, () => {setIsSaved('saving')});
+            if(res) {
+                clearTimeout(timeout);
+                setIsSaved(res)
+                timeout = setTimeout(() => {
+                    setIsSaved(null);
+                }, 4000)
+            };
+        }
     };
 
     const reset = () => {
         setEnteredValue("");
         setIsTouched(false);
     };
+
+    // useEffect(() => {
+    //     if(type === "checkbox"){
+    //         console.log('enteredValue', enteredValue)
+    //     }
+    // }, [enteredValue])
 
     return {
         value: enteredValue,

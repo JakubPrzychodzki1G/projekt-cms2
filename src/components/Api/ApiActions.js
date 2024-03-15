@@ -9,9 +9,7 @@ const API = {
     get: async (apiUrl, options = { params: {} }, context) => {
         const baseURL = getBaseUrl(context);
         const { params } = options;
-    
         const urlSearchParams = new URLSearchParams(params);
-        console.log(options);
 
         const fullUrl = `${baseURL}${apiUrl}${''+urlSearchParams != '' ? '?'+urlSearchParams: ''}`;
     
@@ -59,6 +57,16 @@ const API = {
             },
             options?.signal
         );
+
+        /**
+         * Sprawdza czy request był pomyślny i przekazuję ew. błąd dalej, tak aby trafił na front
+         */
+        if (!res.ok) {
+            const err = new Error(`GET ${fullUrl} failed with status ${res.status}`);
+            err.status = res.status;
+            err.response = res;
+            throw err;
+        }
     
         const jsonResponse = await res.json();
     
@@ -91,8 +99,18 @@ const API = {
             context.res.end();
             return;
         }
+
+        /**
+         * Sprawdza czy request był pomyślny i przekazuję ew. błąd dalej, tak aby trafił na front
+         */
+        if (!res.ok) {
+            const err = new Error(`GET ${fullUrl} failed with status ${res.status}`);
+            err.status = res.status;
+            err.response = res;
+            throw err;
+        }
     
-        const jsonResponse = await res;
+        const jsonResponse = await res.json();
     
         return jsonResponse;
     },
@@ -175,7 +193,6 @@ export default {
         return await API.get(`/users/${id}`, options, context);
     },
     getLessons: async (options, context) => {
-        console.log(options);
         return await API.get("/lessons", options, context);
     },
     getLesson: async (id, options, context) => {
@@ -193,6 +210,12 @@ export default {
     getSetting: async (id, options, context) => {
         return await API.get(`/settings/${id}`, options, context);
     },
+    getGrades: async (options, context) => {
+        return await API.get("/grades", options, context);
+    },
+    getGrade: async (id, options, context) => {
+        return await API.get(`/grades/${id}`, options, context);
+    },
     //posts requests
     postGroup: async (payload, context) => {
         return await API.post("/swim_groups", payload, {}, context);
@@ -208,6 +231,9 @@ export default {
     },
     postAttendance: async (payload, context) => {
         return await API.post("/attendances", payload, {}, context);
+    },
+    postGrade: async (payload, context) => {
+        return await API.post("/grades", payload, {}, context);
     },
     //patch requests
     patchGroup: async (id, payload ,context) => {
@@ -228,12 +254,18 @@ export default {
     patchSetting: async (id, payload ,context) => {
         return await API.patch(`/settings/${id}`, payload, {}, context);
     },
+    patchGrade: async (id, payload ,context) => {
+        return await API.patch(`/grades/${id}`, payload, {}, context);
+    },
     //put requests
     putGroup: async (id, payload ,context) => {
         return await API.put(`/swim_groups/${id}`, payload, {}, context);
     },
     putSetting: async (id, payload ,context) => {
         return await API.put(`/settings/${id}`, payload, {}, context);
+    },
+    putGrade: async (id, payload ,context) => {
+        return await API.put(`/grades/${id}`, payload, {}, context);
     },
     //delete requests
     deleteGroup: async (id, context) => {
@@ -250,6 +282,9 @@ export default {
     },
     deleteAttendance: async (id, context) => {
         return await API.delete(`/attendances/${id}`, context);
+    },
+    deleteGrade: async (id, context) => {
+        return await API.delete(`/grades/${id}`, context);
     }
 }
   

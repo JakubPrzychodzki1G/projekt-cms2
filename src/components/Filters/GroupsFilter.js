@@ -25,7 +25,6 @@ const GroupsFilter = (props) => {
 
     const inputChangeOrBlurHandler = (event, name, callback) => {
         setOptions((prevState) => {
-            console.log(event);
             const options = prevState.includes(name) ? (event.target.value.trim() != '' ? prevState.replace(new RegExp(`&${name}=([^&]*)`), `&${name}=${event.target.value}`) : prevState.replace(new RegExp(`&${name}=([^&]*)`), '')) :  (event.target.value.trim() != '' ? prevState.concat(`&${name}=${event.target.value}`) : prevState);
             props.filterHandler(options);
             return options;

@@ -1,14 +1,24 @@
 'use client'
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useContext } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation";
+import { UserState } from "@/components/simple/clientAuthProvider";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const { push } = useRouter();
+  const router = useRouter();
   const trigger = useRef(null)
   const dropdown = useRef(null)
+  const user = useContext(UserState);
+
+  const ROLES_MAP = {
+    "ROLE_ADMIN": "Administrator",
+    "ROLE_COACH": "Trener",
+    "ROLE_PLAYER": "Zawodnik",
+    "ROLE_PARENT": "Rodzic",
+    "ROLE_USER": "Użytkownik"
+  }
 
   // close on click outside
   useEffect(() => {
@@ -52,11 +62,8 @@ const DropdownUser = () => {
   }
 
   const logout = async() => { 
-    const result = await logoutAction();
-    if(result){
-      console.log('wylogowano');
-      push("/auth/signin");
-    }
+    await logoutAction();
+    router.push("/auth/signin");
   }
 
   return (
@@ -69,9 +76,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {`${user?.name} ${user?.lastName}`}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{ROLES_MAP[user?.roles[0]]}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -109,7 +116,7 @@ const DropdownUser = () => {
           dropdownOpen === true ? "block" : "hidden"
         }`}
       >
-        <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+        {/* <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
             <Link
               href="/profile"
@@ -181,7 +188,7 @@ const DropdownUser = () => {
               Account Settings
             </Link>
           </li>
-        </ul>
+        </ul> */}
         <button className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={logout}>
           <svg
             className="fill-current"
@@ -200,7 +207,7 @@ const DropdownUser = () => {
               fill=""
             />
           </svg>
-          Log Out
+          Wyloguj się
         </button>
       </div>
       {/* <!-- Dropdown End --> */}

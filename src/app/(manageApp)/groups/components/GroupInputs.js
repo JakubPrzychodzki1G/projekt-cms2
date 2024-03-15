@@ -20,7 +20,7 @@ const GroupInputs = (props) => {
         fetch("/api/users?isCoach=true&isDeleted=false", requestOptions)
         .then((res) => res.json())
         .then((data) => {
-            console.log(data)
+            // console.log(data)
             setCoachesData(data)
             // setLoading(false)
         })
@@ -53,7 +53,7 @@ const GroupInputs = (props) => {
                 <MenuItem value={''}></MenuItem>
                 {
                     coachesData && coachesData.map((x) => {
-                        console.log(x)
+                        // console.log(x)
                         return (
                             <MenuItem key={x.id} value={`${x.id}`}>{`${x.name} ${x.lastName}`}</MenuItem>
                         )

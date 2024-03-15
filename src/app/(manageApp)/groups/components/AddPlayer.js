@@ -6,7 +6,7 @@ import api from "@/components/Api/ApiActions";
 
 const AddPlayer = (props) => {
     const [isOpened, setIsOpened] = useState(false);
-    const [playerData, setPlayerData] = useState({});
+    // const [playerData, setPlayerData] = useState({});
     const [playerId, setPlayerId] = useState('');
 
     const inputChangeHandler = (event, name, callback) => {
@@ -32,13 +32,13 @@ const AddPlayer = (props) => {
                     value: x.id
                 }
             }) : ''
-            setPlayerData(mappedData)
+            return mappedData;
         }
     } 
   
-    useEffect(() => {
-        fetchPlayers(props.options ? props.options : '');
-    }, [props.options])
+    // useEffect(() => {
+        
+    // }, [props.options])
 
     return (
         <>
@@ -65,7 +65,8 @@ const AddPlayer = (props) => {
                                 <>
                                     <div className="w-3/4 h-full flex items-center">
                                         <InputAutoSelect
-                                            options={playerData} 
+                                            async={true}
+                                            loadOptions={(inputValue) => fetchPlayers(props.options ? props.options : '')} 
                                             className="w-full"
                                             name="players" 
                                             validateFunction={(value) => {return value !== ''}} 
@@ -74,7 +75,7 @@ const AddPlayer = (props) => {
                                         />
                                     </div>
                                     <div>
-                                        <button className="p-4 bg-blue-500 text-white font-bold rounded-xl mb-6" onClick={(e) => props.addNewPlayer(e, playerId)}>
+                                        <button className="p-4 bg-blue-500 text-white font-bold rounded-xl mb-6" onClick={(e) => props.addNewPlayer(e, playerId, )}>
                                             Dodaj Zawodnika
                                         </button>
                                     </div>

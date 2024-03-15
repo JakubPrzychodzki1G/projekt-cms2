@@ -5,37 +5,46 @@ import InputDateBox from "@/components/inputs/inputdatebox";
 import InputTextBox from "@/components/inputs/inputtextbox";
 import InputTextarea from "@/components/inputs/inputtextarea";
 import { MenuItem } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dayjs from "dayjs";
 
 const PlayerData = (props) => {
+    const [coachesData, setCoachesData] = useState([]);
+    const [playerData, setPlayerData] = useState({});
+    const [loading, setLoading] = useState(true);
+    const timeoutUpdate = useRef(null);
 
     const inputChangeHandler = async (event, name, callback) => {
         callback();
-        let patchHeaders = new Headers();
+        var result = '';
+        const patchHeaders = new Headers();
         patchHeaders.append("Content-Type", "application/merge-patch+json");
         patchHeaders.append("accept", "application/ld+json");
 
-        let patchRequestOptions = {
+        const patchRequestOptions = {
             method: 'PATCH',
             headers: patchHeaders,
             body: JSON.stringify({[name]: name.includes('Date') ? event.$d : event.target.value})
         }
-        return await fetch(`/api/players/${props.id}`, patchRequestOptions)
-        .then(response => {
-            if(response.status != 200){
-                return 'error';
-            }
-            else{
-                return 'success';
-            }
-        })
-        .catch(error => 'error');
-    }
 
-    const [coachesData, setCoachesData] = useState([]);
-    const [playerData, setPlayerData] = useState({});
-    const [loading, setLoading] = useState(true);
+        clearTimeout(timeoutUpdate.current);
+        await new Promise((resolve, reject) => {
+            timeoutUpdate.current = setTimeout(async () => {
+                await fetch(`/api/players/${props.id}`, patchRequestOptions)
+                .then(response => {
+                    if(response.ok){
+                        result = 'success';
+                    }
+                    else{
+                        result = 'error';
+                    }
+                })
+                .catch(error => {result = 'error'});
+                resolve();
+            }, 500)
+        })
+        return result;
+    }
 
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");

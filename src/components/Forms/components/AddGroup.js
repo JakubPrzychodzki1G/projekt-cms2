@@ -13,6 +13,7 @@ const AddGroup = (props) => {
             await api.postGroup(formData)
             .then((res) => {
                 props.refresh();
+                props.close();
             })
         })
     }, [])

@@ -3,7 +3,9 @@
 import AddGroup from "./components/AddGroup"
 import AddLesson from "./components/AddLesson"
 import AddPlayer from "./components/AddPlayer"
+import AddGrade from "./components/AddGrade"
 import { useState } from "react"
+import { ItemValidator } from "@/app/(manageApp)/components/Auth/ItemValidator"
 
 const AddButton = (props) => {
     const [isOpened, setIsOpened] = useState(false);
@@ -12,6 +14,7 @@ const AddButton = (props) => {
     const [namesArray, setNamesArray] = useState([]);
     const [endpointFunc, setEndpointFunc] = useState(() => () => {});
     const [checkFunc, setCheckFunc] = useState(() => () => {});
+    const [error, setError] = useState(false);
     
     const initializeFormData = (initialFormData) => {
         setFormData(initialFormData);
@@ -37,10 +40,10 @@ const AddButton = (props) => {
                 }
             )
         );
-        console.log(formData);
     }
 
-    const clickHandler = () => {
+    const clickHandler = (e = null) => {
+        e?.stopPropagation();
         setFormData({});
         setIsOpened(prevState => !prevState);
     }
@@ -49,12 +52,19 @@ const AddButton = (props) => {
         setCheckFunc(() => func);
     }
 
-    const addEntity = (e) => {
+    const addEntity = async (e) => {
         e.preventDefault();
         if(!formIsValid){
             return;
         }
-        endpointFunc(formData);
+        await endpointFunc(formData)
+        .catch(async (err) => {
+            setError(true);
+            await setTimeout(() => {
+                setError(false);
+                return true;
+            }, 3000);
+        });
     }
 
     const changeCountFormValid = (name, hasError) => {
@@ -78,7 +88,7 @@ const AddButton = (props) => {
     const formIsValid = checkFunc(countFormValid);
 
     const components = {
-        'groups': 
+        'addGroup': 
         <AddGroup 
             refresh={props.refresh} 
             changeCountFormValid={changeCountFormValid} 
@@ -90,8 +100,9 @@ const AddButton = (props) => {
             initializeFormData={initializeFormData}
             formData={formData}
             close={clickHandler}
+            error={error}
         />,
-        'players': 
+        'addPlayer': 
         <AddPlayer 
             refresh={props.refresh} 
             changeCountFormValid={changeCountFormValid} 
@@ -103,8 +114,9 @@ const AddButton = (props) => {
             initializeFormData={initializeFormData}
             formData={formData}
             close={clickHandler}
+            error={error}
         />,
-        'lessons': 
+        'addLesson': 
         <AddLesson 
             refresh={props.refresh} 
             changeCountFormValid={changeCountFormValid} 
@@ -116,37 +128,58 @@ const AddButton = (props) => {
             initializeFormData={initializeFormData}
             formData={formData}
             close={clickHandler}
+            error={error}
+        />,
+        'addGrade':
+        <AddGrade
+            refresh={props.refresh} 
+            changeCountFormValid={changeCountFormValid} 
+            inputChangeHandler={inputChangeHandler} 
+            addEntity={addEntity} 
+            formIsValid={formIsValid} 
+            endpointFunc={setEndpointFuncHandler}
+            checkFunc={checkFuncHandler}
+            initializeFormData={initializeFormData}
+            formData={formData}
+            close={clickHandler}
+            player={props.player}
+            error={error}
         />,
     }
 
     const textData = {
-        'groups':
+        'addGroup':
             {
                 button: "Dodaj Grupe",
                 title: "Dodaj nową Grupe"
             },
-        'players': 
+        'addPlayer': 
             {
                 button: "Dodaj Zawodnika",
                 title: "Dodaj nowego Zawodnika"
             },
-        'lessons':
+        'addLesson':
             {
                 button: "Dodaj Zajęcia",
                 title: "Dodaj nowe Zajęcia"
+            },
+        'addGrade':
+            {
+                button: "+",
+                title: "Dodaj nową ocenę"
             }
     }
 
     return (
-    <>
+    <ItemValidator permission={props.component}>
         <div>
-            <button className="p-4 bg-blue-500 text-white font-bold rounded-xl" onClick={clickHandler}>
+            <button className={`bg-blue-500 text-white font-bold ${props.buttonClassName ? props.buttonClassName : "p-4 rounded-xl"}`} onClick={clickHandler}>
                 {textData[props.component].button}
             </button>
         </div>
         {isOpened && 
-            <div className="absolute top-0 left-0 right-0 min-h-screen bg-black bg-opacity-20 flex justify-center items-center z-99" onClick={clickHandler}>
-                <div className="mt-32 mb-20 w-5/6 md:w-1/2 2xl:w-1/3 bg-white rounded-xl flex flex-col items-center" onClick={e => {e.stopPropagation();}}>
+            <div className="fixed top-0 bottom-0 left-0 lg:left-72.5 right-0 bg-black bg-opacity-20 flex justify-center overflow-auto items-center z-99" onClick={clickHandler}>
+                <div className="mt-32 mb-20 w-5/6 md:w-1/2 2xl:w-1/3 bg-white rounded-xl flex flex-col self-start items-center" onClick={e => {e.stopPropagation();}}>
                     <div className="w-full flex justify-between">
                         <h1 className="p-5 text-lg font-bold">{textData[props.component].title}</h1>
                         <button className="bg-red-500 w-10 h-10 m-4 rounded-lg text-white flex justify-center items-center" onClick={clickHandler}>
@@ -162,7 +195,7 @@ const AddButton = (props) => {
                 </div> */}
             </div>
         }
-    </>
+    </ItemValidator>
     )
 }
 

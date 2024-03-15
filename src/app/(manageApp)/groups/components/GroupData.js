@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import LittlePlayerTable from "@/components/Tables/LittlePlayerTable";
 import AddPlayer from "./AddPlayer";
 import GroupInputs from "./GroupInputs";
@@ -9,9 +9,12 @@ const GroupData = (props) => {
     const [groupsData, setGroupsData] = useState({});
     const [loading, setLoading] = useState(true);
     const [playersData, setPlayersData] = useState([]);
+    const [addingPlayer, setAddingPlayer] = useState(false);
+    const timeoutUpdate = useRef(null);
 
     const inputChangeHandler = async (event, name, callback) => {
         callback();
+        var result = '';
         let patchHeaders = new Headers();
         patchHeaders.append("Content-Type", "application/merge-patch+json");
         patchHeaders.append("accept", "application/ld+json");
@@ -21,20 +24,28 @@ const GroupData = (props) => {
             headers: patchHeaders,
             body: JSON.stringify({[name]: name.includes('Date') ? event.$d : event.target.value})
         }
-        return await fetch(`/api/swim_groups/${props.id}`, patchRequestOptions)
-        .then(response => {
-            if(response.status != 200){
-                return 'error';
-            }
-            else{
-                return 'success';
-            }
+        clearTimeout(timeoutUpdate.current);
+        await new Promise((resolve, reject) => {
+            timeoutUpdate.current = setTimeout(async () => {
+                await fetch(`/api/swim_groups/${props.id}`, patchRequestOptions)
+                .then(response => {
+                    if(response.ok){
+                        result = 'success';
+                    }
+                    else{
+                        result =  'error';
+                    }
+                })
+                .catch(error => {result = 'error'});
+                resolve();
+            }, 500)
         })
-        .catch(error => 'error');
+        return result
     }
 
     const addNewPlayer = (e, playerId) => {
         e.preventDefault();
+        setAddingPlayer(true);
         const modPlayers = [...groupsData.players, `/api/players/${playerId}`]
         const myHeaders = new Headers();
         myHeaders.append("accept", "application/json");
@@ -49,6 +60,7 @@ const GroupData = (props) => {
         .then((res) => {
           if(res.ok) {
             fetchGroups();
+            setAddingPlayer(false);
             setIsOpened(prevState => !prevState);
           }
         })
@@ -84,7 +96,7 @@ const GroupData = (props) => {
         // mode: 'no-cors'
         };
 
-        await groupsData.players.forEach(async element => {
+        await groupsData.players?.forEach(async element => {
             await fetch(element, requestOptions)
             .then((res) => res.json())
             .then((data) => {
@@ -100,13 +112,13 @@ const GroupData = (props) => {
     const deletePlayer = (e, playerId) => {
         e.preventDefault();
         const modPlayers = groupsData.players.filter((player) => player !== `/api/players/${playerId}`)
-        console.log(modPlayers);
+        // console.log(modPlayers);
         var myHeaders = new Headers();
         myHeaders.append("accept", "application/json");
-        myHeaders.append("Content-Type", "application/ld+json");
+        myHeaders.append("Content-Type", "application/merge-patch+json");
 
         var requestOptions = {
-            method: 'PUT',
+            method: 'PATCH',
             headers: myHeaders,
             body: JSON.stringify({players: modPlayers})
         };
@@ -141,7 +153,7 @@ const GroupData = (props) => {
                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
                         {props.name}
                     </h4>
-                    {!props.isReadOnly && <AddPlayer players={groupsData.players} options={{"exists[swimGroup]": false}} addNewPlayer={addNewPlayer} refresh={fetchGroups}/>}
+                    {!props.isReadOnly && <AddPlayer players={groupsData.players} options={{"exists[swimGroup]": false}} addNewPlayer={addNewPlayer} refresh={fetchGroups} loading={addingPlayer}/>}
                 </div>
                 <GroupInputs inputChangeHandler={inputChangeHandler} groupsData={groupsData} isReadOnly={props.isReadOnly} groupId={props.id}/>
                 <div className="mb-2 text-xl font-bold">

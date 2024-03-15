@@ -11,7 +11,7 @@ export default function LoginForm() {
 
     const inputChangeHandler = (event) => {
         setSignInData((prevState) => ({...prevState, [event.target.name]: event.target.value}));
-        console.log(countFormValid);
+        // console.log(countFormValid);
     }
 
     const validateEmail = (email) => {
@@ -38,7 +38,7 @@ export default function LoginForm() {
                 redirect: 'follow'
             };
 
-            fetch("/api/login", requestOptions)
+            fetch("/api/login_sr", requestOptions)
             .then(response => {
             if(response.status != 202){
                 console.log('error');
@@ -97,6 +97,7 @@ export default function LoginForm() {
                         className="w-full rounded-lg bg-transparent py-2 outline-none text-lg text-slate-500 dark:text-slate-100 focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" 
                         name="password" 
                         label="Hasło" 
+                        type="password"
                         validateFunction={(value) => {return value !== '' && value?.trim().length >= 7}} 
                         formIsValid={changeCountFormValid}
                         inputChange={inputChangeHandler}

@@ -3,9 +3,10 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
-import { UserState } from "@/components/simple/authProvider"
+import { UserState } from "@/components/simple/clientAuthProvider"
 import Link from "next/link"
 import PlayerFilter from "@/components/Filters/PlayerFilter"
+import { ItemValidator } from "@/app/(manageApp)/components/Auth/ItemValidator"
 
 const PlayersTable = () => {
   const [playersData, setPlayersData] = useState([]);
@@ -14,7 +15,6 @@ const PlayersTable = () => {
   const [filterOptions, setFilterOptions] = useState("");
 
   const fetchPlayers = async (options = '') => {
-    const roles = user?.roles;
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
 
@@ -36,7 +36,6 @@ const PlayersTable = () => {
   useEffect(() => {
     fetchPlayers();
   }, [])
-
   const isEditor = user.roles?.includes("ROLE_USER") || user.roles?.includes("ROLE_ADMIN"); 
   
   const deletePlayer = (e, playerId) => {
@@ -138,22 +137,20 @@ const PlayersTable = () => {
                 }
               </p>
             </div>
-            {
-              isEditor && (
-                <>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <Link href={`players/edit/${player.id}`} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                      Edytuj
-                    </Link>
-                  </div>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deletePlayer(e, player.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                      Usuń
-                    </button>
-                  </div>
-                </>
-              )
-            }
+            <ItemValidator permission="/players/edit">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <Link href={`players/edit/${player.id}`} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  Edytuj
+                </Link>
+              </div>
+            </ItemValidator>
+            <ItemValidator permission="deletePlayer">
+              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                <button onClick={(e) => {e.preventDefault()}} onDoubleClick={(e) => {deletePlayer(e, player.id)}} className="px-2 py-1.5 text-sm font-medium text-white transition duration-200 ease-in-out bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                  Usuń
+                </button>
+              </div>
+            </ItemValidator>
           {/* </div> */}
           </Link>
         ))}

@@ -6,7 +6,7 @@ export default function InputTextarea(props){
     if(props.readOnly){
         return (
             <div className={`${props.className} flex flex-col justify-end`}>
-                <label for={props.name}>{props.label}</label>
+                <label htmlFor={props.name}>{props.label}</label>
                 <textarea name={props.name} id={props.name} className="h-28 border hover:border-gray-600 rounded px-4 w-full bg-gray-50" value={props.value} readOnly></textarea>
             </div>
         )
@@ -23,7 +23,7 @@ export default function InputTextarea(props){
 
     return (
     <div className={`${props.className} flex flex-col justify-start`}>
-        <label for={props.name}>{props.label}</label>
+        <label htmlFor={props.name}>{props.label}</label>
         <textarea onClick={props.onClick} name={props.name} id={props.name} className="h-28 border hover:border-gray-600 rounded px-4 w-full bg-gray-50" value={textAreaValue} onChange={valueChangeHandler} onBlur={(e) => {inputBlurHandler(e)}} placeholder={props.placeholder}></textarea>
         {hasError && 
             <div className="mt-2 text-red-600">

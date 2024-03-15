@@ -1,6 +1,6 @@
 
 import UseInput from "@/hooks/use-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function InputCheckbox(props){
     if(props.readOnly) return (
@@ -10,10 +10,10 @@ export default function InputCheckbox(props){
                     type="checkbox"
                     name={props.name}
                     id={props.name}
-                    checked={props.value}
+                    checked={props.checked}
                     readOnly={true}
                 />
-                <label for={props.name}>{props.label}</label>
+                <label htmlFor={props.name}>{props.label}</label>
             </div>
         )
     
@@ -26,42 +26,46 @@ export default function InputCheckbox(props){
         reset: reset,
         isSaved: isSaved
     } = UseInput(props.validateFunction, props.inputChange, 'checkbox', props.name, props.formIsValid, props.checked, props.onBlur, props.specialFunc);
-
-
+    // if(props.name != 'isInvidual'){
+    //     console.log('initial '+props.name, props.checked);
+    // }
     return(
-        <div className={`${props.className} flex justify-start items-center`} onClick={props.onClick ? props.onClick : () => void 0 }>
-            <input
-                className='h-8 w-8 border hover:border-gray-600 rounded px-4 bg-gray-50 mr-2'
-                type="checkbox"
-                name={props.name}
-                id={props.name}
-                onChange={valueChangeHandler}
-                onBlur={inputBlurHandler}
-                checked={checkboxValue}
-            />
-            <label for={props.name}>{props.label}</label>
+        <>
+            <div className={`${props.className} flex justify-start items-center`} onClick={props.onClick ? props.onClick : () => void 0 }>
+                <input
+                    className='h-8 w-8 border hover:border-gray-600 rounded px-4 bg-gray-50 mr-2'
+                    type="checkbox"
+                    name={props.name}
+                    id={props.name}
+                    onChange={valueChangeHandler}
+                    onBlur={inputBlurHandler}
+                    checked={checkboxValue}
+                />
+                <label htmlFor={props.name}>{props.label}</label>
+                {
+                    isSaved
+                    && 
+                    isSaved == 'success' 
+                    ? 
+                    (<div className="mt-2 text-green-600">Zapisano!</div>) 
+                    : 
+                        isSaved == 'error' 
+                        ? 
+                        (<div className="mt-2 text-red-600">Błąd zapisu!</div>) 
+                        : 
+                            isSaved == 'saving' 
+                            ? 
+                            (<div className="mt-2 text-blue-600">Zapisywanie</div>)
+                            : 
+                            ''
+                }
+            </div>
             {hasError && 
-                <div className="mt-2 text-red-600">
+                <div className=" text-red-600">
                     {props.errorText}
                 </div>
             }
-            {
-                isSaved
-                && 
-                isSaved == 'success' 
-                ? 
-                (<div className="mt-2 text-green-600">Zapisano!</div>) 
-                : 
-                    isSaved == 'error' 
-                    ? 
-                    (<div className="mt-2 text-red-600">Błąd zapisu!</div>) 
-                    : 
-                        isSaved == 'saving' 
-                        ? 
-                        (<div className="mt-2 text-blue-600">Zapisywanie</div>)
-                        : 
-                        ''
-            }
-        </div>
+        </>
+        
     )
 }

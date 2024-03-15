@@ -6,7 +6,7 @@ export default function InputTextBox(props){
     if(props.readOnly){
         return (
             <div className={`${props.className} flex flex-col`}>
-                <label className="" for={props.name}>{props.label}</label>
+                <label className="" htmlFor={props.name}>{props.label}</label>
                 <input 
                     type="text" 
                     name={props.name} 
@@ -30,7 +30,7 @@ export default function InputTextBox(props){
     const initial = true;
     return (
     <div className={`${props.className} flex flex-col justify-start`}>
-        <label className="" for={props.name}>{props.label}</label>
+        <label className="" htmlFor={props.name}>{props.label}</label>
         <input 
             type={props.type ? props.type : "text"}
             name={props.name} 
