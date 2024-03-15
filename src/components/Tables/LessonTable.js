@@ -27,7 +27,9 @@ const LessonTable = (props) => {
     };
     const res = await api.getLessons(getOptions)
     if(res) {
-        setLessonsData(res);
+        setLessonsData(prevState => {
+          return [...prevState, ...res.filter(newLesson => !prevState.some(oldLesson => oldLesson.id === newLesson.id))]
+        });
         setLoading(false);
     }
   } 

@@ -84,7 +84,7 @@ const AddLesson = (props) => {
             "isInvidual": false,
         })
         props.checkFunc((count) => {
-            return count === 3;
+            return count > 2;
         })
         props.endpointFunc(async (formData) => {
             setLoading(true);
@@ -209,12 +209,10 @@ const AddLesson = (props) => {
                 name="coach" 
                 label="Trener"
                 inputChange={props.inputChangeHandler}
-                validateFunction={(value) => {return value !== ''}} 
                 formIsValid={props.changeCountFormValid} 
                 value={props.formData["coach"]}
                 readOnly={readOnly}
             >
-                <MenuItem value={''}></MenuItem>
                 {
                     coachesData && coachesData.map((x) => {
                         return (
