@@ -55,7 +55,7 @@ const GroupInputs = (props) => {
                     coachesData && coachesData.map((x) => {
                         // console.log(x)
                         return (
-                            <MenuItem key={x.id} value={`${x.id}`}>{`${x.name} ${x.lastName}`}</MenuItem>
+                            <MenuItem key={x.id} value={`/api/users/${x.id}`}>{`${x.name} ${x.lastName}`}</MenuItem>
                         )
                     })
                 }

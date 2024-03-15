@@ -27,7 +27,7 @@ const AddButton = (props) => {
                     ...prevState, 
                     [name]: name.includes('Date') ? event.$d : 
                     name.includes('coach') 
-                    ? `/api/users/${event.target.value}` 
+                    ? event.target.value
                     : (
                         event.target?.type == 'checkbox' 
                         ? event.target.checked 
